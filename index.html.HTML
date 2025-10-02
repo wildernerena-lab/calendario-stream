@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calendario Semanal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: url('https://i.imgur.com/WcAKgE6.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Quicksand', Quicksand;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .contenedor {
+      display: flex;
+      flex-direction: row;
+      gap: 40px;
+      align-items: center;
+      justify-content: center;
+      width: 90%;
+      max-width: 1000px;
+      padding: 40px;
+    }
+
+    .izquierda {
+      flex: 1;
+      text-align: left;
+      color: #fff;
+    }
+
+    .izquierda .logo {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    .izquierda .nota {
+      font-size: 20px;
+      margin-top: 20px;
+      color: #fff;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    .rango {
+      font-size: 16px;
+      margin-top: 10px;
+      color: #fff;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    .calendario {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+.logo {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px 2px #000;
+  color: #fff;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+  text-shadow: 2px 2px 4px #ffb6c1;
+}
+
+
+    .dia {
+      padding: 18px;
+      border-radius: 20px;
+     background: var(--bg-dia);
+  backdrop-filter: blur(10px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+      text-align: left;
+      transition: transform 2s ease;
+      border: var(--borde-dia, none);
+    }
+
+    .dia:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px rgba(255, 182, 193, 0.4);
+    }
+
+    .label {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ffffff;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .juego {
+      font-size: 15px;
+      color: rgb(250,250,250);
+    }
+
+    .dia.lunes {
+  --bg-dia: linear-gradient(135deg, rgba(58, 44, 58, .5), rgba(63, 66, 77, 0.7));
+}
+.dia.martes {
+  --bg-dia: linear-gradient(135deg, rgba(67, 63, 70, .5), rgba(79, 80, 96, 0.7));
+}
+.dia.miercoles {
+  --bg-dia: linear-gradient(135deg, rgba(85, 68, 77, .5), rgba(114, 81, 100, 0.7));
+}
+.dia.jueves {
+  --bg-dia: linear-gradient(135deg, rgba(101, 80, 68, .5), rgba(132, 92, 88, 0.7));
+}
+.dia.viernes {
+  --bg-dia: linear-gradient(135deg, rgba(100, 48, 61, .5), rgba(130, 64, 84, 0.7));
+}
+.dia.sabado {
+  --bg-dia: linear-gradient(135deg, rgba(97, 41, 46, .5), rgba(127, 70, 84, 0.7));
+}
+.dia.domingo {
+  --bg-dia: linear-gradient(135deg, rgba(93, 37, 44, .5), rgba(116, 70, 75, 0.7));
+}
+
+
+    @media (max-width: 768px) {
+      .contenedor {
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .izquierda .logo {
+        font-size: 24px;
+      }
+
+      .dia {
+        padding: 16px;
+        font-size: 16px;
+        text-align: center;
+      }
+
+      .label {
+        font-size: 16px;
+      }
+
+      .juego {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <div class="izquierda">
+      <a href="https://twitch.tv/renawilderne" target="_blank" class="logo">🌷 RENA WILDERNE</a>
+
+      <div class="nota">Calendario semanal sujeto a cambios</div>
+      <div class="rango" id="rango-semana"></div>
+    </div>
+    <div class="calendario">
+      <div class="dia lunes" id="lunes"><span class="label">Lunes</span><span class="juego"></span></div>
+      <div class="dia martes" id="martes"><span class="label">Martes</span><span class="juego"></span></div>
+      <div class="dia miercoles" id="miercoles"><span class="label">Miércoles</span><span class="juego"></span></div>
+      <div class="dia jueves" id="jueves"><span class="label">Jueves</span><span class="juego"></span></div>
+      <div class="dia viernes" id="viernes"><span class="label">Viernes</span><span class="juego"></span></div>
+      <div class="dia sabado" id="sabado"><span class="label">Sábado</span><span class="juego"></span></div>
+      <div class="dia domingo" id="domingo"><span class="label">Domingo</span><span class="juego"></span></div>
+    </div>
+  </div>
+
+  <script>
+    function obtenerRangoSemana() {
+      const hoy = new Date();
+      const diaActual = hoy.getDay();
+      const lunes = new Date(hoy);
+      lunes.setDate(hoy.getDate() - ((diaActual + 6) % 7));
+      const domingo = new Date(lunes);
+      domingo.setDate(lunes.getDate() + 6);
+
+      const opciones = { day: 'numeric', month: 'long' };
+      const formato = new Intl.DateTimeFormat('es-MX', opciones);
+      const texto = `Del ${formato.format(lunes)} al ${formato.format(domingo)}`;
+      document.getElementById("rango-semana").textContent = texto;
+    }
+
+    obtenerRangoSemana();
+
+    fetch("https://script.google.com/macros/s/AKfycbyePi-qeTJ6LM8eNCbQ1AXRXkVs3Ed-QjAcLpp1AhPCRvMCdhBzZRL1oDjF0ZdbqNcd/exec")
+      .then(response => response.json())
+      .then(data => {
+        data.forEach(({ dia, juego }) => {
+          const id = dia.toLowerCase();
+          const contenedor = document.getElementById(id);
+          const spanJuego = contenedor?.querySelector('.juego');
+          if (spanJuego) {
+            spanJuego.textContent = juego;
+          }
+        });
+      })
+      .catch(error => console.error("❌ Error al obtener los datos:", error));
+
+    const dias = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+    const hoy = new Date().getDay();
+    const id = dias[hoy];
+    const diaHoy = document.getElementById(id);
+    if (diaHoy) {
+      diaHoy.classList.add('hoy');
+    }
+  </script>
+</body>
+</html>
+
