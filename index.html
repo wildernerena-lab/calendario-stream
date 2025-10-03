@@ -30,6 +30,7 @@
       width: 90%;
       max-width: 1000px;
       padding: 40px;
+		padding-top: 70px; /* ajusta según el alto del panel */
     }
 
     .izquierda {
@@ -38,7 +39,7 @@
   color: #fff;
   padding: 30px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(100,100,100, 0.2);
   backdrop-filter: blur(12px);
   box-shadow: 0 8px 24px rgba(255, 182, 193, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -100,7 +101,7 @@
   backdrop-filter: blur(10px);
       box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
       text-align: left;
-      transition: transform 2s ease;
+      transition: transform .2s ease;
       border: var(--borde-dia, none);
     }
 
@@ -165,9 +166,40 @@
 }
 
 .dia.hoy {
-  animation: resplandor 3s infinite;
+  animation: resplandor .2s infinite;
 }
 
+.top-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, .5);
+  backdrop-filter: blur(20px);
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 14px 0;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(255, 182, 193, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.top-panel a {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 16px;
+  transition: transform 0.3s ease, color 0.3s ease;
+  background: linear-gradient(90deg, #fbd6e3, #ffe4f0);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.top-panel a:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 6px #ffb6c1);
+}
 
     @media (max-width: 768px) {
       .contenedor {
@@ -196,15 +228,26 @@
     }
   </style>
 </head>
+
 <body>
+  <!-- Panel superior -->
+  <div class="top-panel">
+    <a href="https://www.youtube.com/@RenaWilderne0122" target="_blank">YouTube</a>
+    <a href="https://www.twitch.tv/renawilderne" target="_blank">Twitch</a>
+    <a href="https://www.tiktok.com/@renawilderne" target="_blank">TikTok</a>
+    <a href="https://www.instagram.com/renawilderne" target="_blank">Instagram</a>
+    <a href="https://discord.gg/G8NgF8cGz5" target="_blank">Servidor de Discord</a>
+  </div>
+
+  <!-- Contenido principal -->
   <div class="contenedor">
     <div class="izquierda">
       <a href="https://twitch.tv/renawilderne" target="_blank" class="logo">🌷 RENA WILDERNE</a>
-
       <div class="nota">Calendario semanal sujeto a cambios</div>
       <div class="rango" id="rango-semana"></div>
     </div>
     <div class="calendario">
+      <!-- Días de la semana -->
       <div class="dia lunes" id="lunes"><span class="label">Lunes</span><span class="juego"></span></div>
       <div class="dia martes" id="martes"><span class="label">Martes</span><span class="juego"></span></div>
       <div class="dia miercoles" id="miercoles"><span class="label">Miércoles</span><span class="juego"></span></div>
@@ -215,7 +258,11 @@
     </div>
   </div>
 
+  <!-- Canvas oculto para extraer color dominante -->
+  <canvas id="canvas" style="display:none;"></canvas>
+
   <script>
+    // Rango de semana
     function obtenerRangoSemana() {
       const hoy = new Date();
       const diaActual = hoy.getDay();
@@ -224,59 +271,48 @@
       const domingo = new Date(lunes);
       domingo.setDate(lunes.getDate() + 6);
 
-      const opciones = { day: 'numeric', month: 'long' };
-      const formato = new Intl.DateTimeFormat('es-MX', opciones);
-      const texto = `Del ${formato.format(lunes)} al ${formato.format(domingo)}`;
-      document.getElementById("rango-semana").textContent = texto;
+      const formato = new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'long' });
+      document.getElementById("rango-semana").textContent = `Del ${formato.format(lunes)} al ${formato.format(domingo)}`;
     }
 
     obtenerRangoSemana();
 
+    // Datos desde Google Apps Script
     fetch("https://script.google.com/macros/s/AKfycbyePi-qeTJ6LM8eNCbQ1AXRXkVs3Ed-QjAcLpp1AhPCRvMCdhBzZRL1oDjF0ZdbqNcd/exec")
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
         data.forEach(({ dia, juego }) => {
-          const id = dia.toLowerCase();
-          const contenedor = document.getElementById(id);
+          const contenedor = document.getElementById(dia.toLowerCase());
           const spanJuego = contenedor?.querySelector('.juego');
-          if (spanJuego) {
-            spanJuego.textContent = juego;
-          }
+          if (spanJuego) spanJuego.textContent = juego;
         });
       })
-      .catch(error => console.error("❌ Error al obtener los datos:", error));
+      .catch(err => console.error("❌ Error al obtener los datos:", err));
 
-    // Ajuste para zona horaria UTC-6
-function obtenerDiaActualUTC6() {
-  const ahoraUTC = new Date();
-  const offsetUTC6 = -6 * 60; // minutos
-  const ahoraLocal = new Date(ahoraUTC.getTime() + offsetUTC6 * 60000);
-  return ahoraLocal.getDay(); // 0 (domingo) a 6 (sábado)
-}
+    // Día actual en UTC-6
+    function obtenerDiaActualUTC6() {
+      const ahoraUTC = new Date();
+      const offset = -6 * 60;
+      return new Date(ahoraUTC.getTime() + offset * 60000).getDay();
+    }
 
-const dias = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
-const hoy = obtenerDiaActualUTC6();
-const id = dias[hoy];
-const diaHoy = document.getElementById(id);
-if (diaHoy) {
-  diaHoy.classList.add('hoy');
-}
+    const dias = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+    const hoy = obtenerDiaActualUTC6();
+    document.getElementById(dias[hoy])?.classList.add('hoy');
 
-const fondos = [
-  "https://i.imgur.com/WcAKgE6.png",
-  "https://i.imgur.com/16SUggG.png",
-  "https://i.imgur.com/3teuYnX.jpeg",
-"https://i.imgur.com/83vbPvK.png",
-"https://i.imgur.com/E0ZU80R.png",
-"https://i.imgur.com/ajkL3Tr.jpeg"
-];
-
-const fondoAleatorio = fondos[Math.floor(Math.random() * fondos.length)];
-document.body.style.backgroundImage = `url('${fondoAleatorio}')`;
-
-
+    // Fondo aleatorio
+    const fondos = [
+      "https://i.imgur.com/WcAKgE6.png",
+      "https://i.imgur.com/16SUggG.png",
+      "https://i.imgur.com/3teuYnX.jpeg",
+      "https://i.imgur.com/83vbPvK.png",
+      "https://i.imgur.com/E0ZU80R.png",
+      "https://i.imgur.com/ajkL3Tr.jpeg"
+    ];
+    const fondoAleatorio = fondos[Math.floor(Math.random() * fondos.length)];
+    document.body.style.backgroundImage = `url('${fondoAleatorio}')`;
 
   </script>
 </body>
-</html>
 
+</html>
