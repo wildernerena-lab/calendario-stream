@@ -9,8 +9,11 @@
     body {
       margin: 0;
       padding: 0;
-      background: url('https://i.imgur.com/WcAKgE6.png') no-repeat center center fixed;
-      background-size: cover;
+      background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-size: cover;
+  transition: background-image 1s ease-in-out;
       font-family: 'Quicksand', Quicksand;
       display: flex;
       justify-content: center;
@@ -30,10 +33,18 @@
     }
 
     .izquierda {
-      flex: 1;
-      text-align: left;
-      color: #fff;
-    }
+  flex: 1;
+  text-align: left;
+  color: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(255, 182, 193, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.4s ease;
+}
+
 
     .izquierda .logo {
       font-size: 36px;
@@ -63,20 +74,23 @@
       gap: 20px;
     }
 .logo {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: bold;
   margin-bottom: 10px;
-  text-shadow: 1px 1px 2px #000;
-  color: #fff;
+  color: #ffffff;
   text-decoration: none;
   display: inline-block;
+  background: linear-gradient(90deg, #fbd6e3, #ffe4f0);
+  -webkit-background-clip: text;
+  text-shadow: none;
   transition: transform 0.3s ease;
 }
 
 .logo:hover {
-  transform: scale(1.05);
-  text-shadow: 2px 2px 4px #ffb6c1;
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 6px #ffb6c1);
 }
+
 
 
     .dia {
@@ -130,6 +144,30 @@
   --bg-dia: linear-gradient(135deg, rgba(93, 37, 44, .5), rgba(116, 70, 75, 0.7));
 }
 
+.dia.hoy {
+  background: linear-gradient(135deg, rgba(255, 192, 203, 0.4), rgba(255, 182, 193, 0.3)); /* rosa pastel translúcido */
+  border: 2px solid rgba(255, 182, 193, 0.8);
+  box-shadow: 0 0 25px rgba(255, 182, 193, 0.5);
+  transform: scale(1.03);
+  transition: all 0.4s ease-in-out;
+}
+
+
+.dia.hoy .juego {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+@keyframes resplandor {
+  0% { box-shadow: 0 0 15px rgba(255, 182, 193, 0.4); }
+  50% { box-shadow: 0 0 25px rgba(255, 182, 193, 0.6); }
+  100% { box-shadow: 0 0 15px rgba(255, 182, 193, 0.4); }
+}
+
+.dia.hoy {
+  animation: resplandor 3s infinite;
+}
+
 
     @media (max-width: 768px) {
       .contenedor {
@@ -146,6 +184,7 @@
         font-size: 16px;
         text-align: center;
       }
+
 
       .label {
         font-size: 16px;
@@ -207,13 +246,36 @@
       })
       .catch(error => console.error("❌ Error al obtener los datos:", error));
 
-    const dias = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
-    const hoy = new Date().getDay();
-    const id = dias[hoy];
-    const diaHoy = document.getElementById(id);
-    if (diaHoy) {
-      diaHoy.classList.add('hoy');
-    }
+    // Ajuste para zona horaria UTC-6
+function obtenerDiaActualUTC6() {
+  const ahoraUTC = new Date();
+  const offsetUTC6 = -6 * 60; // minutos
+  const ahoraLocal = new Date(ahoraUTC.getTime() + offsetUTC6 * 60000);
+  return ahoraLocal.getDay(); // 0 (domingo) a 6 (sábado)
+}
+
+const dias = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+const hoy = obtenerDiaActualUTC6();
+const id = dias[hoy];
+const diaHoy = document.getElementById(id);
+if (diaHoy) {
+  diaHoy.classList.add('hoy');
+}
+
+const fondos = [
+  "https://i.imgur.com/WcAKgE6.png",
+  "https://i.imgur.com/16SUggG.png",
+  "https://i.imgur.com/3teuYnX.jpeg",
+"https://i.imgur.com/83vbPvK.png",
+"https://i.imgur.com/E0ZU80R.png",
+"https://i.imgur.com/ajkL3Tr.jpeg"
+];
+
+const fondoAleatorio = fondos[Math.floor(Math.random() * fondos.length)];
+document.body.style.backgroundImage = `url('${fondoAleatorio}')`;
+
+
+
   </script>
 </body>
 </html>
