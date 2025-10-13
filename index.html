@@ -196,6 +196,13 @@
   color: transparent;
 }
 
+.horario {
+  font-size: 16px;
+  margin-top: 10px;
+  color: #fff;
+  text-shadow: 1px 1px 2px #000;
+}
+
 .top-panel a:hover {
   transform: scale(1.1);
   filter: drop-shadow(0 0 6px #ffb6c1);
@@ -245,6 +252,7 @@
       <a href="https://twitch.tv/renawilderne" target="_blank" class="logo">🌷 RENA WILDERNE</a>
       <div class="nota">Calendario semanal sujeto a cambios</div>
       <div class="rango" id="rango-semana"></div>
+	  <div class="horario" id="horario-stream"></div>
     </div>
     <div class="calendario">
       <!-- Días de la semana -->
@@ -291,16 +299,24 @@ obtenerRangoSemana();
 
 
     // Datos desde Google Apps Script
-    fetch("https://script.google.com/macros/s/AKfycbyePi-qeTJ6LM8eNCbQ1AXRXkVs3Ed-QjAcLpp1AhPCRvMCdhBzZRL1oDjF0ZdbqNcd/exec")
-      .then(res => res.json())
-      .then(data => {
-        data.forEach(({ dia, juego }) => {
-          const contenedor = document.getElementById(dia.toLowerCase());
-          const spanJuego = contenedor?.querySelector('.juego');
-          if (spanJuego) spanJuego.textContent = juego;
-        });
-      })
-      .catch(err => console.error("❌ Error al obtener los datos:", err));
+fetch("https://script.google.com/macros/s/AKfycbyePi-qeTJ6LM8eNCbQ1AXRXkVs3Ed-QjAcLpp1AhPCRvMCdhBzZRL1oDjF0ZdbqNcd/exec")
+  .then(res => res.json())
+  .then(data => {
+    // Mostrar juegos
+    data.juegos.forEach(({ dia, juego }) => {
+      const contenedor = document.getElementById(dia.toLowerCase());
+      const spanJuego = contenedor?.querySelector('.juego');
+      if (spanJuego) spanJuego.textContent = juego;
+    });
+
+    // Mostrar horario
+    const horario = data.horario;
+    if (horario?.hora && horario?.zona) {
+      document.getElementById("horario-stream").textContent = `${horario.hora} PM ${horario.zona}`;
+    }
+  })
+  .catch(err => console.error("❌ Error al obtener los datos:", err));
+
 
     // Día actual en UTC-6
     function obtenerDiaActualUTC6() {
@@ -327,5 +343,6 @@ obtenerRangoSemana();
 </body>
 
 </html>
+
 
 
