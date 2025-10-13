@@ -262,20 +262,33 @@
   <canvas id="canvas" style="display:none;"></canvas>
 
   <script>
-    // Rango de semana
     function obtenerRangoSemana() {
-      const hoy = new Date();
-      const diaActual = hoy.getDay();
-      const lunes = new Date(hoy);
-      lunes.setDate(hoy.getDate() - ((diaActual + 6) % 7));
-      const domingo = new Date(lunes);
-      domingo.setDate(lunes.getDate() + 6);
+  const ahora = new Date();
+  const diaActual = ahora.getDay(); // 0 = domingo
+  const horaActual = ahora.getHours();
 
-      const formato = new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'long' });
-      document.getElementById("rango-semana").textContent = `Del ${formato.format(lunes)} al ${formato.format(domingo)}`;
-    }
+  // Detectar si ya es domingo después de las 6 PM
+  const esDomingoDespuesDe6PM = diaActual === 0 && horaActual >= 18;
 
-    obtenerRangoSemana();
+  // Si es domingo después de las 6 PM, avanzar un día para que empiece la nueva semana
+  if (esDomingoDespuesDe6PM) {
+    ahora.setDate(ahora.getDate() + 1);
+  }
+
+  // Calcular lunes y domingo de la semana correspondiente
+  const diaNuevo = ahora.getDay();
+  const lunes = new Date(ahora);
+  lunes.setDate(ahora.getDate() - ((diaNuevo + 6) % 7));
+  const domingo = new Date(lunes);
+  domingo.setDate(lunes.getDate() + 6);
+
+  // Formatear y mostrar
+  const formato = new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'long' });
+  document.getElementById("rango-semana").textContent = `Del ${formato.format(lunes)} al ${formato.format(domingo)}`;
+}
+
+obtenerRangoSemana();
+
 
     // Datos desde Google Apps Script
     fetch("https://script.google.com/macros/s/AKfycbyePi-qeTJ6LM8eNCbQ1AXRXkVs3Ed-QjAcLpp1AhPCRvMCdhBzZRL1oDjF0ZdbqNcd/exec")
@@ -314,4 +327,5 @@
 </body>
 
 </html>
+
 
