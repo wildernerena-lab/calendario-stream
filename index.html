@@ -302,20 +302,14 @@ obtenerRangoSemana();
 fetch("https://script.google.com/macros/s/AKfycbyePi-qeTJ6LM8eNCbQ1AXRXkVs3Ed-QjAcLpp1AhPCRvMCdhBzZRL1oDjF0ZdbqNcd/exec")
   .then(res => res.json())
   .then(data => {
-    // Mostrar juegos
-    data.juegos.forEach(({ dia, juego }) => {
+    data.forEach(({ dia, juego }) => {
       const contenedor = document.getElementById(dia.toLowerCase());
       const spanJuego = contenedor?.querySelector('.juego');
       if (spanJuego) spanJuego.textContent = juego;
     });
-
-    // Mostrar horario
-    const horario = data.horario;
-    if (horario?.hora && horario?.zona) {
-      document.getElementById("horario-stream").textContent = `${horario.hora} PM ${horario.zona}`;
-    }
   })
   .catch(err => console.error("❌ Error al obtener los datos:", err));
+
 
 
     // Día actual en UTC-6
@@ -343,6 +337,7 @@ fetch("https://script.google.com/macros/s/AKfycbyePi-qeTJ6LM8eNCbQ1AXRXkVs3Ed-Qj
 </body>
 
 </html>
+
 
 
 
